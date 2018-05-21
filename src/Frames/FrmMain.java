@@ -78,6 +78,11 @@ public class FrmMain extends javax.swing.JFrame {
         jocHyperlink4.setText("ປະເພດສິນຄ້າ");
         jocHyperlink4.setFont(new java.awt.Font("Saysettha OT", 1, 12)); // NOI18N
         jocHyperlink4.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jocHyperlink4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jocHyperlink4ActionPerformed(evt);
+            }
+        });
         jTaskPaneGroup2.getContentPane().add(jocHyperlink4);
 
         btnMenuUnit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/stats.png"))); // NOI18N
@@ -230,6 +235,15 @@ public class FrmMain extends javax.swing.JFrame {
         } catch (Exception e) {
         }
     }//GEN-LAST:event_btnMenuUnitActionPerformed
+
+    private void jocHyperlink4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jocHyperlink4ActionPerformed
+        try {
+            FrmCategory frm = new FrmCategory();
+            DeskTopControl.add(frm);
+            frm.setVisible(true);
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_jocHyperlink4ActionPerformed
 
     /**
      * @param args the command line arguments
