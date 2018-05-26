@@ -72,6 +72,11 @@ public class FrmMain extends javax.swing.JFrame {
         jocHyperlink3.setText("ສິນຄ້າ");
         jocHyperlink3.setFont(new java.awt.Font("Saysettha OT", 1, 12)); // NOI18N
         jocHyperlink3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        jocHyperlink3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jocHyperlink3ActionPerformed(evt);
+            }
+        });
         jTaskPaneGroup2.getContentPane().add(jocHyperlink3);
 
         jocHyperlink4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Icons/Cube.png"))); // NOI18N
@@ -244,6 +249,12 @@ public class FrmMain extends javax.swing.JFrame {
         } catch (Exception e) {
         }
     }//GEN-LAST:event_jocHyperlink4ActionPerformed
+
+    private void jocHyperlink3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jocHyperlink3ActionPerformed
+        FrmProductList frm = new FrmProductList();
+        DeskTopControl.add(frm);
+        frm.setVisible(true);
+    }//GEN-LAST:event_jocHyperlink3ActionPerformed
 
     /**
      * @param args the command line arguments
