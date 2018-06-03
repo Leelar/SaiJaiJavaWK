@@ -2,20 +2,35 @@
 package Frames;
 
 import Controllers.ConnectionDB;
+import Controllers.GetMaxID;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Types;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 public class FrmNewProduct extends javax.swing.JDialog {
     Connection c= ConnectionDB.getConnection();
     ArrayList<Integer> arrayCate = new ArrayList();
     ArrayList<Integer> arrayUnit = new ArrayList();
-    public FrmNewProduct(java.awt.Frame parent, boolean modal) {
+    String path;
+    public FrmNewProduct(java.awt.Frame parent, boolean modal, String pid) {
         super(parent, modal);
         initComponents();
         showCategory();
         showUnit();
+        txtProductiD.setText(pid);
+        showData();
     }
     private void showCategory(){
         try {
@@ -36,7 +51,7 @@ public class FrmNewProduct extends javax.swing.JDialog {
     private void showUnit(){
         try {
             DefaultComboBoxModel model = new DefaultComboBoxModel();
-            String sql="Select UnitID,UitName from tbl_Unit";
+            String sql="Select UnitID,UnitName from tbl_Unit";
             model.removeAllElements();
             arrayUnit.clear();
             ResultSet rs = c.createStatement().executeQuery(sql);
@@ -47,6 +62,37 @@ public class FrmNewProduct extends javax.swing.JDialog {
             cmbUnit.setModel(model);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    private void showData() {
+        try {
+            if (!(txtProductiD.getText().equals("New"))) {
+                Connection c = ConnectionDB.getConnection();
+                String qeury = "Select p.ProductId, c.CateName, p.Productname,\n"
+                        + "p.Price, p.qty, u.UnitName, p.Total, p.Images from tbl_Product p inner join\n"
+                        + "tbl_Category c on p.cateID=c.CateID inner join tbl_Unit u on\n"
+                        + "p.UnitID = u.UnitID\n"
+                        + "where p.ProductID='"+txtProductiD.getText().trim()+"'";
+                ResultSet rs = c.createStatement().executeQuery(qeury);
+                if(rs.next()){
+                   txtProductName.setText(rs.getString("Productname"));
+                   cmbCategory.setSelectedItem(rs.getString("CateName"));
+                   txtPrice.setText(String.valueOf(String.format("%,.0f", rs.getDouble("Price"))));
+                   txtQty.setText(String.valueOf(String.format("%d", rs.getInt("qty"))));
+                   cmbUnit.setSelectedItem(rs.getString("UnitName"));
+                   txtTotal.setText(String.valueOf(String.format("%,.0f", rs.getDouble("Total"))));
+                   byte[] picture;
+                   picture = rs.getBytes("Images");
+                   if(picture !=null){
+                       lblImage.setText("");
+                       ImageIcon icon = new ImageIcon(picture);
+                       Image img = icon.getImage();
+                       Image img2 = ResizeScale(img, lblImage.getWidth(), lblImage.getHeight());
+                       lblImage.setIcon(new ImageIcon(img2));   
+                   }
+                }
+            }
+        } catch (Exception e) {
         }
     }
     @SuppressWarnings("unchecked")
@@ -72,7 +118,7 @@ public class FrmNewProduct extends javax.swing.JDialog {
         jLabel7 = new javax.swing.JLabel();
         txtTotal = new javax.swing.JTextField();
         jPanel4 = new javax.swing.JPanel();
-        jLabel8 = new javax.swing.JLabel();
+        lblImage = new javax.swing.JLabel();
         cmbUnit = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -83,6 +129,11 @@ public class FrmNewProduct extends javax.swing.JDialog {
 
         btnSave.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
         btnSave.setText("ບັນທຶກ");
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
 
         btnCancel.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
         btnCancel.setText("ຍົກເລີກ");
@@ -114,7 +165,9 @@ public class FrmNewProduct extends javax.swing.JDialog {
         jLabel1.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
         jLabel1.setText("ລະຫັດ");
 
+        txtProductiD.setEditable(false);
         txtProductiD.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
+        txtProductiD.setText("New");
 
         cmbCategory.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
         cmbCategory.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -131,11 +184,25 @@ public class FrmNewProduct extends javax.swing.JDialog {
         jLabel4.setText("ລາຄາສິນຄ້າ");
 
         txtPrice.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
+        txtPrice.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtPrice.setText("0");
+        txtPrice.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPriceKeyReleased(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
         jLabel5.setText("ຈຳນວນ");
 
         txtQty.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
+        txtQty.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtQty.setText("0");
+        txtQty.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtQtyKeyReleased(evt);
+            }
+        });
 
         jLabel6.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
         jLabel6.setText("ຫົວໜ່ວຍ");
@@ -144,14 +211,22 @@ public class FrmNewProduct extends javax.swing.JDialog {
         jLabel7.setText("ລາຄາລວມ");
 
         txtTotal.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
+        txtTotal.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        txtTotal.setText("0");
 
         jPanel4.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         jPanel4.setLayout(new java.awt.BorderLayout());
 
-        jLabel8.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
-        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel8.setText("ຮູບສິນຄ້າ");
-        jPanel4.add(jLabel8, java.awt.BorderLayout.CENTER);
+        lblImage.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
+        lblImage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblImage.setText("ຮູບສິນຄ້າ");
+        lblImage.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        lblImage.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblImageMouseClicked(evt);
+            }
+        });
+        jPanel4.add(lblImage, java.awt.BorderLayout.CENTER);
 
         cmbUnit.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
         cmbUnit.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -251,6 +326,112 @@ public class FrmNewProduct extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void lblImageMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblImageMouseClicked
+        try {
+            if(evt.getClickCount()==2){
+                lblImage.setText("");
+                JFileChooser chooser = new JFileChooser();
+                chooser.showOpenDialog(null);
+                path  =chooser.getSelectedFile().getAbsolutePath();
+                Image img = new ImageIcon(path).getImage();
+                Image ic = ResizeScale(img,lblImage.getWidth(),lblImage.getHeight());
+                lblImage.setIcon(new ImageIcon(ic));
+            }
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_lblImageMouseClicked
+
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        try {
+            Connection c = ConnectionDB.getConnection();
+            int cateID = cmbCategory.getSelectedIndex();
+            int unitID = cmbUnit.getSelectedIndex();
+            if(txtProductiD.getText().equals("New")){
+                GetMaxID gd = new GetMaxID();
+                String insert = "Insert into Tbl_Product(ProductID,CateID,ProductName,Price,Qty,UnitID,Total,Images)"
+                        + "values(?,?,?,?,?,?,?,?)";
+                PreparedStatement p = c.prepareStatement(insert);
+                p.setString(1, gd.getAutoMaxID("Tbl_Product", "ProductID"));
+                p.setInt(2, Integer.parseInt(arrayCate.get(cateID).toString()));
+                p.setString(3, txtProductName.getText().trim());
+                p.setDouble(4, Double.parseDouble(txtPrice.getText().replace(",", "")));
+                p.setInt(5, Integer.parseInt(txtQty.getText().replace(",", "")));
+                p.setInt(6, Integer.parseInt(arrayUnit.get(unitID).toString()));
+                p.setDouble(7, Double.parseDouble(txtTotal.getText().replace(",", "")));
+                if(path==null){
+                    p.setNull(8, Types.BLOB);
+                }else{
+                    File ff = new File(path);
+                    int len = (int)ff.length();
+                    FileInputStream fis = new FileInputStream(ff);
+                    p.setBinaryStream(8, fis,len);
+                }
+                p.executeUpdate();
+                p.close();
+            }else{
+                String update ="update tbl_Product set ProductName=?, CateID=?, Price=?, Qty=?"
+                        + ", UnitID=?, Total=? where ProductID=? ";
+                PreparedStatement p = c.prepareStatement(update);
+                p.setString(1, txtProductName.getText().trim());
+                p.setInt(2, arrayCate.get(cateID));
+                p.setDouble(3, Double.parseDouble(txtPrice.getText().replace(",", "")));
+                p.setInt(4, Integer.parseInt(txtQty.getText().replace(",", "")));
+                p.setInt(5, arrayUnit.get(unitID));
+                p.setDouble(6, Double.parseDouble(txtTotal.getText().replace(",", "")));
+                p.setString(7, txtProductiD.getText().trim());
+                if(p.executeUpdate() != -1) {
+                    if (path != null) {
+                        String updateImage = "Update tbl_Product set Images=? where ProductID=?";
+                        PreparedStatement p1 = c.prepareStatement(updateImage);
+                        File ff = new File(path);
+                        int len = (int) ff.length();
+                        FileInputStream fis = new FileInputStream(ff);
+                        p1.setBinaryStream(1, fis, len);
+                        p1.setString(2, txtProductiD.getText().trim());
+                        p1.executeUpdate();
+                        p1.close();
+                    }
+                }
+                JOptionPane.showMessageDialog(null, "Successful","message",JOptionPane.INFORMATION_MESSAGE);
+                p.close();
+            }
+            c.close();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btnSaveActionPerformed
+
+    private void txtPriceKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPriceKeyReleased
+        char chr = evt.getKeyChar();
+        if(!(Character.isDigit(chr) || chr==KeyEvent.VK_SPACE)){
+            evt.consume();
+            txtPrice.setText("0");
+        }else{
+            double p = Double.parseDouble(txtPrice.getText().replace(",", ""));
+            txtPrice.setText(String.valueOf(String.format("%,.0f", p)));
+        }
+    }//GEN-LAST:event_txtPriceKeyReleased
+
+    private void txtQtyKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtQtyKeyReleased
+       char chr = evt.getKeyChar();
+        if (!(Character.isDigit(chr) || chr==KeyEvent.VK_SPACE)) {
+            evt.consume();
+            txtQty.setText("0");
+        } else {
+            double price = Double.parseDouble(txtPrice.getText().replace(",", ""));
+            int qty = Integer.parseInt(txtQty.getText());
+            double total = price * qty;
+            txtTotal.setText(String.valueOf(String.format("%,.0f", total)));
+        }
+    }//GEN-LAST:event_txtQtyKeyReleased
+   private BufferedImage ResizeScale(Image img,int w, int h){
+       BufferedImage ims = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+       Graphics2D g = ims.createGraphics();
+       g.drawImage(img, 0,0,w,h, null);
+       g.dispose();
+        return ims;
+   }
     /**
      * @param args the command line arguments
      */
@@ -281,7 +462,7 @@ public class FrmNewProduct extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                FrmNewProduct dialog = new FrmNewProduct(new javax.swing.JFrame(), true);
+                FrmNewProduct dialog = new FrmNewProduct(new javax.swing.JFrame(), true, "");
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -305,11 +486,11 @@ public class FrmNewProduct extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JLabel lblImage;
     private javax.swing.JTextField txtPrice;
     private javax.swing.JTextField txtProductName;
     private javax.swing.JTextField txtProductiD;

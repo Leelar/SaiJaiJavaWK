@@ -33,9 +33,6 @@ public class FrmEmployeeList extends javax.swing.JInternalFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         btnNew = new javax.swing.JButton();
-        btnEdit = new javax.swing.JButton();
-        btnView = new javax.swing.JButton();
-        btnDelete = new javax.swing.JButton();
         btnRefresh = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         txtSearch = new javax.swing.JTextField();
@@ -56,15 +53,6 @@ public class FrmEmployeeList extends javax.swing.JInternalFrame {
             }
         });
 
-        btnEdit.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
-        btnEdit.setText("ແກ້ໄຂ");
-
-        btnView.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
-        btnView.setText("ກວດເບີ່ງ");
-
-        btnDelete.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
-        btnDelete.setText("ລົບອອກ");
-
         btnRefresh.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
         btnRefresh.setText("ໂຫລດໃໝ່");
 
@@ -76,35 +64,26 @@ public class FrmEmployeeList extends javax.swing.JInternalFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(2, 2, 2)
                 .addComponent(btnNew)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnEdit)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnView)
-                .addGap(18, 18, 18)
-                .addComponent(btnDelete)
-                .addGap(18, 18, 18)
+                .addGap(2, 2, 2)
                 .addComponent(btnRefresh)
-                .addGap(18, 18, 18)
+                .addGap(275, 275, 275)
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
                 .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(241, Short.MAX_VALUE))
+                .addContainerGap(257, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(1, 1, 1)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnNew)
-                    .addComponent(btnEdit)
-                    .addComponent(btnView)
-                    .addComponent(btnDelete)
                     .addComponent(btnRefresh)
                     .addComponent(jLabel1)
                     .addComponent(txtSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(1, 1, 1))
         );
 
         jPanel2Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnRefresh, txtSearch});
@@ -173,7 +152,7 @@ public class FrmEmployeeList extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -189,11 +168,8 @@ public class FrmEmployeeList extends javax.swing.JInternalFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnDelete;
-    private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnNew;
     private javax.swing.JButton btnRefresh;
-    private javax.swing.JButton btnView;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

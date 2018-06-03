@@ -1,15 +1,42 @@
 
 package Frames;
 
+import Controllers.ConnectionDB;
+import Controllers.GetMaxID;
 import java.awt.Font;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 public class FrmPosition extends javax.swing.JInternalFrame {
-
+    DefaultTableModel model = new DefaultTableModel();
     public FrmPosition() {
         initComponents();
         jTable1.getTableHeader().setFont(new Font("Saysettha OT",Font.BOLD,12));
+        model = (DefaultTableModel) jTable1.getModel();
+        loadData();
     }
-
+    private void loadData(){
+        try {
+            int rowIndex = jTable1.getRowCount()-1;
+            while(rowIndex>-1){
+                model.removeRow(rowIndex--);
+            }
+            Connection c = ConnectionDB.getConnection();
+            String query = "Select * from tbl_Position";
+            ResultSet rs =c.createStatement().executeQuery(query);
+            while(rs.next()){
+                int positionID = rs.getInt(1);
+                String positionName = rs.getString(2);
+                model.addRow(new Object[]{positionID,positionName});
+            }
+            jTable1.setModel(model);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -45,10 +72,20 @@ public class FrmPosition extends javax.swing.JInternalFrame {
 
         btnDelete.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
         btnDelete.setText("ລົບອອກ");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
         jPanel2.add(btnDelete);
 
         btnCancel.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
         btnCancel.setText("ຍົກເລີກ");
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
         jPanel2.add(btnCancel);
 
         jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -58,7 +95,7 @@ public class FrmPosition extends javax.swing.JInternalFrame {
 
         txtPositionID.setEditable(false);
         txtPositionID.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
-        txtPositionID.setText("AutoID");
+        txtPositionID.setText("New");
 
         jLabel2.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
         jLabel2.setText("ຕຳແໜ່ງ");
@@ -76,8 +113,8 @@ public class FrmPosition extends javax.swing.JInternalFrame {
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtPositionID, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtPositionName, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtPositionName, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtPositionID, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -116,6 +153,11 @@ public class FrmPosition extends javax.swing.JInternalFrame {
         });
         jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         jTable1.setRowHeight(27);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
             jTable1.getColumnModel().getColumn(0).setMinWidth(70);
@@ -156,8 +198,61 @@ public class FrmPosition extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-        
+        try {
+            Connection c = ConnectionDB.getConnection();
+            if ("New".equals(txtPositionID.getText())) {
+                GetMaxID gm = new GetMaxID();
+                 String insert ="Insert into tbl_Position(PositionID,PositionName)values(?,?)";
+                 PreparedStatement p = c.prepareStatement(insert);
+                 p.setInt(1, gm.getMaxID("tbl_Position", "PositionID"));
+                 p.setString(2, txtPositionName.getText());
+                 p.executeUpdate();
+                 p.close();
+            } else {
+                String update = "Update tbl_Position set Positionname=? where PositionID=?";
+                PreparedStatement p = c.prepareStatement(update);
+                p.setString(1, txtPositionName.getText());
+                p.setInt(2, Integer.parseInt(txtPositionID.getText()));
+                p.executeUpdate();
+                p.close();
+            }
+            c.close();
+            loadData();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_btnSaveActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        int rowSelect = jTable1.getSelectedRow();
+        int positionID = Integer.parseInt(jTable1.getValueAt(rowSelect,0).toString());
+        String positionName = jTable1.getValueAt(rowSelect, 1).toString();
+        txtPositionID.setText(String.valueOf(positionID));
+        txtPositionName.setText(positionName);
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+       txtPositionID.setText("New");
+       txtPositionName.setText("");
+    }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        try {
+            int joption = JOptionPane.showConfirmDialog(null, "Do you want to delete?", "message", JOptionPane.YES_NO_OPTION);
+            if (joption == 0) {
+                Connection c = ConnectionDB.getConnection();
+                String delete = "Delete tbl_Position where PositionID=?";
+                PreparedStatement p = c.prepareStatement(delete);
+                p.setInt(1, Integer.parseInt(txtPositionID.getText()));
+                p.executeUpdate();
+                p.close();
+                c.close();
+                loadData();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

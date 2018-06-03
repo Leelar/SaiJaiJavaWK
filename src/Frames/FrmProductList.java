@@ -5,8 +5,10 @@ import Controllers.ConnectionDB;
 import Controllers.HorizontalAlignmentHeaderRenderer;
 import java.awt.Font;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.DecimalFormat;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
@@ -60,6 +62,8 @@ public class FrmProductList extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPopupMenu1 = new javax.swing.JPopupMenu();
+        menuDelete = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         btnNew = new javax.swing.JButton();
@@ -67,6 +71,15 @@ public class FrmProductList extends javax.swing.JInternalFrame {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+
+        menuDelete.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
+        menuDelete.setText("ລົບລາຍການ");
+        menuDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuDeleteActionPerformed(evt);
+            }
+        });
+        jPopupMenu1.add(menuDelete);
 
         setClosable(true);
         setTitle("Product List");
@@ -84,6 +97,11 @@ public class FrmProductList extends javax.swing.JInternalFrame {
 
         btnRefresh.setFont(new java.awt.Font("Saysettha OT", 0, 12)); // NOI18N
         btnRefresh.setText("ໂຫຼດຂໍ້ມູນມາໃໝ່");
+        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRefreshActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -134,7 +152,13 @@ public class FrmProductList extends javax.swing.JInternalFrame {
             }
         });
         jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        jTable1.setComponentPopupMenu(jPopupMenu1);
         jTable1.setRowHeight(27);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
             jTable1.getColumnModel().getColumn(0).setMinWidth(70);
@@ -172,7 +196,7 @@ public class FrmProductList extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 517, Short.MAX_VALUE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 539, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -182,9 +206,47 @@ public class FrmProductList extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewActionPerformed
-        FrmNewProduct frm = new FrmNewProduct(null, closable);
+        FrmNewProduct frm = new FrmNewProduct(null, closable,"New");
         frm.show();
+        btnRefresh.doClick();
     }//GEN-LAST:event_btnNewActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        try {
+           if(evt.getClickCount()==2){
+                int rowSelect = jTable1.getSelectedRow();
+                String productID = jTable1.getValueAt(rowSelect, 0).toString();
+                FrmNewProduct frm =  new FrmNewProduct(null, closable, productID);
+                frm.setVisible(true);
+                btnRefresh.doClick();
+           }
+        } catch (Exception e) {
+        }
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+        LoadData();
+    }//GEN-LAST:event_btnRefreshActionPerformed
+
+    private void menuDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuDeleteActionPerformed
+        try {
+            int joption = JOptionPane.showConfirmDialog(null, "Do you want to delete?", "message", JOptionPane.YES_NO_OPTION);
+            if (joption == 0) {
+                int rowSelect = jTable1.getSelectedRow();
+                String productID = jTable1.getValueAt(rowSelect, 0).toString();
+                String delete = "Delete tbl_product where ProductID=?";
+                Connection c = ConnectionDB.getConnection();
+                PreparedStatement p = c.prepareStatement(delete);
+                p.setString(1, productID);
+                p.executeUpdate();
+                p.close();
+                c.close();
+                LoadData();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_menuDeleteActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -193,7 +255,9 @@ public class FrmProductList extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JMenuItem menuDelete;
     // End of variables declaration//GEN-END:variables
 }
